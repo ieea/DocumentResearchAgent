@@ -49,7 +49,7 @@ def main():
         wc.Property(name="title", data_type=wc.DataType.TEXT),
         wc.Property(name="content", data_type=wc.DataType.TEXT),
         wc.Property(name="date", data_type=wc.DataType.DATE),
-        wc.Property(name="doc_id", data_type=wc.DataType.INT)
+        wc.Property(name="doc_id", data_type=wc.DataType.TEXT)
     ]
     # intialize name
     name = "Test_Documents_2"
