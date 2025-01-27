@@ -1,20 +1,46 @@
 import requests
 import json
 
-url="http://localhost:32768/search"
+class URLExtractor:
+    def __init__(self, base_url, query):
+        self.base_url = base_url
+        self.query = query
+        self.urls = []
 
-response = requests.get(url, params = {"q": "Indian IT companies hiring scenario in 2025", "format":"json"})
-print(response.url, response.status_code)
-print(response.text)
-parsed_json = json.loads(response.text)
-urls=[]
-for result in parsed_json["results"]:
-    try:
-        url = result["url"]
-        urls.append(result["url"])
-    except KeyError as e:
-        print(f"KeyError: {e}")
-print("Extracted URLs: ", "No. of URLs: ",urls, len(urls))
-        
+    def fetch_data(self):
+        try:
+            response = requests.get(self.base_url, params={"q": self.query, "format": "json"})
+            response.raise_for_status()  # Raise an exception if the request fails
+            return response.json()
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+        except requests.exceptions.ConnectionError as conn_err:
+            print(f"Connection error occurred: {conn_err}")
+        except requests.exceptions.Timeout as timeout_err:
+            print(f"Timeout error occurred: {timeout_err}")
+        except requests.exceptions.RequestException as req_err:
+            print(f"An error occurred: {req_err}")
+        return None
 
-#http://localhost:32768/search?q=india&format=json&image_proxy=False&default_lang=en
+    def extract_urls(self):
+        data = self.fetch_data()
+        if data:
+            try:
+                for result in data["results"]:
+                    url = result["url"]
+                    self.urls.append(url)
+            except KeyError as e:
+                print(f"KeyError: {e}")
+
+    def get_urls(self):
+        return self.urls
+
+# Example usage
+base_url = "http://localhost:32768/search"
+query = "Indian IT companies hiring scenario in 2025"
+
+extractor = URLExtractor(base_url, query)
+extractor.extract_urls()
+urls = extractor.get_urls()
+print("Extracted URLs:", urls)
+print("No. of URLs:", len(urls))
